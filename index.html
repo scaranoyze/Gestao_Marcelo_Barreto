@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controle Financeiro - Marcelo Barreto</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">MB</div>
+        <div>
+          <strong>Marcelo Barreto</strong>
+          <span>Controle Financeiro</span>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+        <button class="nav-btn" data-view="clientes">Clientes</button>
+        <button class="nav-btn" data-view="parcelas">Parcelas</button>
+        <button class="nav-btn" data-view="faturamento">Faturamento</button>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <p>Controle de valores emprestados e recebimentos.</p>
+        </div>
+        <button class="btn btn-primary" id="btnNovoCliente">+ Novo cliente</button>
+      </header>
+
+      <section id="view-dashboard" class="view active">
+        <div class="cards">
+          <article class="card">
+            <span>Total a receber</span>
+            <strong id="dashTotal">R$ 0,00</strong>
+          </article>
+          <article class="card">
+            <span>Total recebido</span>
+            <strong id="dashRecebido">R$ 0,00</strong>
+          </article>
+          <article class="card">
+            <span>Saldo em aberto</span>
+            <strong id="dashAberto">R$ 0,00</strong>
+          </article>
+          <article class="card danger-card">
+            <span>Valor em atraso</span>
+            <strong id="dashAtrasado">R$ 0,00</strong>
+          </article>
+        </div>
+
+        <div class="cards faturamento-mini">
+          <article class="card">
+            <span>Faturado neste mês</span>
+            <strong id="dashMesAtual">R$ 0,00</strong>
+          </article>
+          <article class="card">
+            <span>Previsto para este mês</span>
+            <strong id="dashPrevistoMes">R$ 0,00</strong>
+          </article>
+          <article class="card">
+            <span>Faturado no mês anterior</span>
+            <strong id="dashMesAnterior">R$ 0,00</strong>
+          </article>
+          <article class="card">
+            <span>Média mensal recebida</span>
+            <strong id="dashMediaMensal">R$ 0,00</strong>
+          </article>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Resumo dos clientes</h2>
+              <p>Visão rápida da carteira.</p>
+            </div>
+          </div>
+          <div id="listaResumo" class="client-grid"></div>
+        </div>
+      </section>
+
+      <section id="view-clientes" class="view">
+        <div class="panel">
+          <div class="panel-header responsive">
+            <div>
+              <h2>Clientes</h2>
+              <p>Cadastre, edite e acompanhe cada contrato.</p>
+            </div>
+            <input id="buscaCliente" class="input search" placeholder="Buscar cliente..." />
+          </div>
+          <div id="listaClientes" class="client-list"></div>
+        </div>
+      </section>
+
+      <section id="view-parcelas" class="view">
+        <div class="panel">
+          <div class="panel-header responsive">
+            <div>
+              <h2>Parcelas</h2>
+              <p>Veja pagamentos, pendências e atrasos.</p>
+            </div>
+            <select id="filtroParcelas" class="input">
+              <option value="todas">Todas</option>
+              <option value="atrasado">Atrasadas</option>
+              <option value="pendente">Pendentes</option>
+              <option value="pago">Pagas</option>
+            </select>
+          </div>
+          <div id="listaParcelas" class="table-wrap"></div>
+        </div>
+      </section>
+      <section id="view-faturamento" class="view">
+        <div class="cards">
+          <article class="card">
+            <span>Faturado neste mês</span>
+            <strong id="fatMesAtual">R$ 0,00</strong>
+            <small id="fatMesAtualLabel" class="card-note"></small>
+          </article>
+          <article class="card">
+            <span>Mês anterior</span>
+            <strong id="fatMesAnterior">R$ 0,00</strong>
+            <small id="fatVariacao" class="card-note"></small>
+          </article>
+          <article class="card">
+            <span>Previsto neste mês</span>
+            <strong id="fatPrevistoAtual">R$ 0,00</strong>
+            <small class="card-note">Parcelas com vencimento no mês.</small>
+          </article>
+          <article class="card">
+            <span>Total já faturado</span>
+            <strong id="fatTotalHistorico">R$ 0,00</strong>
+            <small class="card-note">Somente parcelas pagas.</small>
+          </article>
+        </div>
+
+        <div class="panel faturamento-panel">
+          <div class="panel-header responsive">
+            <div>
+              <h2>Faturamento mensal</h2>
+              <p>Realizado x previsto por mês.</p>
+            </div>
+            <select id="filtroAnoFaturamento" class="input year-select"></select>
+          </div>
+          <div id="graficoFaturamento" class="revenue-chart"></div>
+        </div>
+
+        <div class="panel faturamento-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Detalhamento mensal</h2>
+              <p>Entradas realizadas e valores previstos.</p>
+            </div>
+          </div>
+          <div id="tabelaFaturamento" class="table-wrap"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="modalCliente">
+    <div class="modal-backdrop" data-close="modalCliente"></div>
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <div>
+          <h2 id="clienteModalTitulo">Novo cliente</h2>
+          <p>Informe os dados do cliente e da dívida.</p>
+        </div>
+        <button class="icon-btn" data-close="modalCliente">×</button>
+      </div>
+
+      <form id="formCliente">
+        <input type="hidden" id="clienteId" />
+
+        <div class="form-grid">
+          <label>
+            Nome completo
+            <input class="input" id="nome" required />
+          </label>
+
+          <label>
+            CPF
+            <input class="input" id="cpf" placeholder="000.000.000-00" />
+          </label>
+
+          <label>
+            Contato
+            <input class="input" id="contato" placeholder="(73) 99999-9999" />
+          </label>
+
+          <label>
+            Valor total do acordo
+            <input class="input" id="valorTotal" type="number" min="0" step="0.01" required />
+          </label>
+
+          <label>
+            Quantidade de parcelas
+            <input class="input" id="qtdParcelas" type="number" min="1" value="1" required />
+          </label>
+
+          <label>
+            Valor de cada parcela
+            <input class="input" id="valorParcela" type="number" min="0" step="0.01" required />
+          </label>
+
+          <label>
+            1º vencimento
+            <input class="input" id="primeiroVencimento" type="date" required />
+          </label>
+
+          <label>
+            Parcelas já pagas
+            <input class="input" id="parcelasPagas" type="number" min="0" value="0" />
+          </label>
+        </div>
+
+        <label>
+          Observações
+          <textarea class="input textarea" id="observacoes" placeholder="Anotações sobre o cliente ou acordo..."></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close="modalCliente">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="modalDetalhes">
+    <div class="modal-backdrop" data-close="modalDetalhes"></div>
+    <div class="modal-card modal-xl">
+      <div class="modal-header">
+        <div>
+          <h2 id="detalheNome">Cliente</h2>
+          <p id="detalheInfo"></p>
+        </div>
+        <button class="icon-btn" data-close="modalDetalhes">×</button>
+      </div>
+      <div id="detalheConteudo"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
